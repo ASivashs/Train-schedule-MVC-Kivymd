@@ -1,6 +1,5 @@
-# import xml.dom.minidom as md
+import xml.dom.minidom
 import xml.sax
-import json
 import time
 
 
@@ -58,8 +57,41 @@ class TrainHandler(xml.sax.handler.ContentHandler):
             self.__trains[self.__current_id]["arrival time"] = self.__arrival_time
 
 
-handler = TrainHandler()
-parser = xml.sax.make_parser()
-parser.setContentHandler(handler)
-parser.parse("trains.xml")
-print(handler.trains)
+def save_xml(train_number: str, train_departure_station: str, train_arrival_station: str,
+             train_departure_time: str, train_arrival_time: str, xml_file_name: str = "trains.xml"):
+
+    xml_save = xml.dom.minidom.Document()
+    trains_group = xml_save.createElement("trains")
+
+    new_train = xml_save.createElement("train")
+    new_train.setAttribute("id", "47")
+
+    number = xml_save.createElement("number")
+    number.appendChild(xml_save.createTextNode(train_number))
+
+    departure_station = xml_save.createElement("departure_station")
+    departure_station.appendChild(xml_save.createTextNode(train_departure_station))
+
+    arrival_station = xml_save.createElement("arrival_station")
+    arrival_station.appendChild(xml_save.createTextNode(train_arrival_station))
+
+    departure_time = xml_save.createElement("departure_time")
+    departure_time.appendChild(xml_save.createTextNode(train_departure_time))
+
+    arrival_time = xml_save.createElement("arrival_time")
+    arrival_time.appendChild(xml_save.createTextNode(train_arrival_time))
+
+    new_train.appendChild(number)
+    new_train.appendChild(departure_station)
+    new_train.appendChild(arrival_station)
+    new_train.appendChild(departure_time)
+    new_train.appendChild(arrival_time)
+
+    trains_group.appendChild(new_train)
+    xml_save.appendChild(trains_group)
+
+    with open(xml_file_name, "w") as f:
+        f.write(xml_save.toprettyxml())
+
+
+save_xml("666", "Jordan", "Oman", "14:14:01:03:2011", "01:01:09:11:2003")
