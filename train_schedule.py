@@ -29,9 +29,35 @@ class TrainSchedule:
             "arrival time": arrival_time
         }
 
+    def find_by_(self, filter_by: str, element: str = "number"):
+        """Find elements by number, departure date, departure station,
+        arrival station, travel time and return it."""
+        needed_elements: dict = {}
+        for key, value in self._train_schedule.items():
+            if filter_by == value[element]:
+                needed_elements[key] = value
+        return needed_elements
+
+    def find_diaposone(self, go_time: tuple, mode: str = "departure time"):
+        """Find elements by departure time and arrival time
+        and return it."""
+        needed_elements: dict = {}
+        for key, value in self._train_schedule.items():
+            if go_time[0] < value[mode] < go_time[1]:
+                needed_elements[key] = value[mode]
+        return needed_elements
+
+    def delete_elements(self, delete_elements: dict):
+        """Delete elements by id and return new schedule.
+        Pass here dict or part of dict."""
+        deliting_keys: set = {id for id in delete_elements.keys()}
+        for key in self._train_schedule.keys():
+            if key in deliting_keys:
+                del self._train_schedule[key]
+        return self._train_schedule
+
     def load_schedule_xml(self, file_name="trains.xml") -> dict:
         """Load xml save and return loaded data in dict type."""
-
         class TrainHandler(xml.sax.handler.ContentHandler):
 
             def __init__(self):
@@ -132,3 +158,8 @@ class TrainSchedule:
 
         with open(xml_file_name, "w") as f:
             f.write(xml_save.toprettyxml())
+
+
+xml_parser = TrainSchedule()
+xml_parser.load_schedule_xml()
+schedule = xml_parser.train_schedule
