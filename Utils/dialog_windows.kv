@@ -1,0 +1,115 @@
+#:kivy 2.1.0
+
+
+<MyTextField@MDTextField>:
+    size_hint: 0.5, 0.1
+    input_type: "text"
+
+<MyNumberField@MyTextField>:
+    input_type: "number"
+    input_filter: "int"
+    max_text_length: 5
+
+<DialogContent>:
+    orientation: "vertical"
+    spacing: "12dp"
+    size_hint_y: None
+    height: "300dp"
+
+<SaveDialogContent>:
+    height: "50dp"
+    path: save_path
+    MyTextField:
+        id: save_path
+        hint_text: "enter file name"
+
+<UploadDialogContent>:
+    height: "50dp"
+    path: upload_path
+    MyTextField:
+        id: upload_path
+        hint_text: "enter file name"
+
+<InputDialogContent>:
+    height: "360dp"
+    product: input_product
+    line_up: input_line_up
+    position: input_position
+    titles: input_titles
+    street: input_street
+
+    MyTextField:
+        id: input_product
+        hint_text: "Enter Product Name"
+
+    MyTextField:
+        id: input_line_up
+        hint_text: "Enter Manufacturer's name"
+
+    MyTextField:
+        id: input_position
+        hint_text: "Manufacturer's UNP"
+
+    MyNumberField:
+        id: input_titles
+        hint_text: "Enter Quantity in stock"
+
+    MyTextField:
+        id: input_street
+        hint_text: "Enter Warehouse address"
+
+<FilterDialogContent>:
+    height: "360dp"
+    product: filter_product
+    line_up: filter_line_up
+    position: filter_position
+    titles: filter_titles
+    street: filter_street
+
+    MyTextField:
+        id: filter_product
+        hint_text: "Enter Product Name"
+
+    MyTextField:
+        id: filter_line_up
+        hint_text: "Enter Manufacturer's name"
+
+    MyTextField:
+        id: filter_position
+        hint_text: "Enter Manufacturer's UNP"
+
+    MyTextField:
+        id: filter_titles
+        hint_text: "Enter Quantity in stock"
+
+    MyTextField:
+        id: filter_street
+        hint_text: "Enter Warehouse address"
+
+<DeleteDialogContent>:
+    height: "380dp"
+    product: delete_product
+    line_up: delete_line_up
+    position: delete_position
+    titles: delete_titles
+    street: delete_street
+
+    MyTextField:
+        id: delete_product
+        hint_text: "Enter Product Name"
+
+    MyTextField:
+        id: delete_line_up
+        hint_text: "Enter Manufacturer's name"
+
+    MyTextField:
+        id: delete_position
+        hint_text: "Enter Manufacturer's UNP"
+
+    MyTextField:
+        id: delete_titles
+        hint_text: "Enter Quantity in stock"
+
+    MyTextField:
+        id: delete_street
+        hint_text: "Enter Warehouse address"

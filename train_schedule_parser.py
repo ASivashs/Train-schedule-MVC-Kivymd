@@ -17,6 +17,8 @@ class TrainSchedule:
     def add_element(self, train_number: str, departure_station: str, arrival_station: str,
                     departure_time: dt.datetime, arrival_time: dt.datetime):
         """Add input element to dict."""
+        if len(self._ids) >= 1000:
+            raise "You can't add more then 1000 elements to table."
         new_id: str = str(randint(0, 1000))
         while new_id in self._ids:
             new_id = str(randint(0, 1000))
@@ -26,38 +28,52 @@ class TrainSchedule:
             "departure station": departure_station,
             "arrival station": arrival_station,
             "departure time": departure_time,
-            "arrival time": arrival_time
+            "arrival time": arrival_time,
+            "travel time": arrival_time - departure_time
         }
 
-    def find_by_(self, filter_by: str, element: str = "number"):
-        """Find elements by number, departure date, departure station,
-        arrival station, travel time and return it."""
-        needed_elements: dict = {}
+    def find_elements(self, filters: tuple | list, mode: str) -> dict | None:
+        """Find elements in train schedule and return dict with these elements."""
+        result: dict = {}
+        format_string = "%Y-%m-%d %H:%M:%S"
         for key, value in self._train_schedule.items():
-            if filter_by == value[element]:
-                needed_elements[key] = value
-        return needed_elements
+            match mode:
+                case "number":
+                    if filters[0] == value["number"] or \
+                            dt.datetime.strptime(filters[1], format_string) == value["departure time"]:
+                        result[key] = self._train_schedule[key]
+                case "time":
+                    if dt.datetime.strptime(filters[0], format_string) <= value["departure time"] <= \
+                            dt.datetime.strptime(filters[1], format_string) or \
+                            dt.datetime.strptime(filters[0], format_string) <= value["arrival time"] <= \
+                            dt.datetime.strptime(filters[1], format_string):
+                        result[key] = self._train_schedule[key]
+                case "station":
+                    if filters[0] == value["departure station"] or \
+                            filters[1] == value["arrival station"]:
+                        result[key] = self._train_schedule[key]
+                case "travel time":
+                    if value["travel time"] <= \
+                            dt.datetime.strptime(filters[0], "%H:%M:%S") - dt.datetime.strptime("00:00:00", "%H:%M:%S"):
+                        result[key] = self._train_schedule[key]
+        if not result:
+            return
+        return result
 
-    def find_diaposone(self, go_time: tuple, mode: str = "departure time"):
-        """Find elements by departure time and arrival time
-        and return it."""
-        needed_elements: dict = {}
-        for key, value in self._train_schedule.items():
-            if go_time[0] < value[mode] < go_time[1]:
-                needed_elements[key] = value[mode]
-        return needed_elements
-
-    def delete_elements(self, delete_elements: dict):
-        """Delete elements by id and return new schedule.
-        Pass here dict or part of dict."""
-        deliting_keys: set = {id for id in delete_elements.keys()}
-        for key in self._train_schedule.keys():
-            if key in deliting_keys:
+    def delete_elements(self, del_elements: dict) -> dict | None:
+        """Find elements in train schedule and delete this elements.
+        Return deleted elements."""
+        for key in list(self._train_schedule.keys())[:]:
+            if key in set(del_elements.keys()):
                 del self._train_schedule[key]
-        return self._train_schedule
+                print(f"Element {key} successfully deleted.")
+        if not del_elements:
+            return
+        return del_elements
 
-    def load_schedule_xml(self, file_name="trains.xml") -> dict:
+    def load_schedule_xml(self, file_name: str = "trains.xml") -> dict | None:
         """Load xml save and return loaded data in dict type."""
+
         class TrainHandler(xml.sax.handler.ContentHandler):
 
             def __init__(self):
@@ -114,9 +130,15 @@ class TrainSchedule:
                 if self.__current == "arrival_time":
                     self.__trains[self.__current_id]["arrival time"] = dt.datetime.strptime(self.__arrival_time,
                                                                                             format_string)
+                    self.__trains[self.__current_id]["travel time"] = self.__trains[self.__current_id]["arrival time"] - \
+                                                                      self.__trains[self.__current_id]["departure time"]
 
         schedule_parse = TrainHandler()
-        xml.sax.parse(file_name, schedule_parse)
+        try:
+            xml.sax.parse(file_name, schedule_parse)
+        except OSError as err:
+            print(err)
+            return
         self._train_schedule = schedule_parse.trains
         self._ids = set(id for id in schedule_parse.trains.keys())
         return schedule_parse.trains
@@ -156,10 +178,9 @@ class TrainSchedule:
 
         xml_save.appendChild(trains_group)
 
-        with open(xml_file_name, "w") as f:
-            f.write(xml_save.toprettyxml())
-
-
-xml_parser = TrainSchedule()
-xml_parser.load_schedule_xml()
-schedule = xml_parser.train_schedule
+        try:
+            with open(xml_file_name, "w") as f:
+                f.write(xml_save.toprettyxml())
+        except OSError as err:
+            print(err)
+            return

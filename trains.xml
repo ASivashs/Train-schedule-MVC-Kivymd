@@ -56,4 +56,11 @@
 		<departure_time>2022-06-03 22:47:00</departure_time>
 		<arrival_time>2022-08-04 23:43:00</arrival_time>
 	</train>
+	<train id="22">
+		<number>235</number>
+		<departure_station>Jimbo</departure_station>
+		<arrival_station>Baltimore</arrival_station>
+		<departure_time>2022-06-03 22:47:00</departure_time>
+		<arrival_time>2022-08-04 23:43:00</arrival_time>
+	</train>
 </trains>
