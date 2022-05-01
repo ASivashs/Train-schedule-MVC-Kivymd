@@ -1,14 +1,10 @@
 #:kivy 2.1.0
 
 
-<MyTextField@MDTextField>:
+<DialogTextField@MDTextField>:
     size_hint: 0.5, 0.1
     input_type: "text"
 
-<MyNumberField@MyTextField>:
-    input_type: "number"
-    input_filter: "int"
-    max_text_length: 5
 
 <DialogContent>:
     orientation: "vertical"
@@ -16,100 +12,135 @@
     size_hint_y: None
     height: "300dp"
 
+
 <SaveDialogContent>:
     height: "50dp"
+
     path: save_path
-    MyTextField:
+
+    DialogWindow:
         id: save_path
-        hint_text: "enter file name"
+        hint_text: "Save file name"
+
 
 <UploadDialogContent>:
     height: "50dp"
+
     path: upload_path
-    MyTextField:
+
+    DialogWindow:
         id: upload_path
-        hint_text: "enter file name"
+        hint_text: "Load file name"
+
 
 <InputDialogContent>:
     height: "360dp"
-    product: input_product
-    line_up: input_line_up
-    position: input_position
-    titles: input_titles
-    street: input_street
 
-    MyTextField:
-        id: input_product
-        hint_text: "Enter Product Name"
+    train_number: input_train_number
+    departure_station: input_departure_station
+    arrival_station: input_arrival_station
 
-    MyTextField:
-        id: input_line_up
-        hint_text: "Enter Manufacturer's name"
+    DialogWindow:
+        id: input_train_number
+        size_hint: 1, .2
+        hint_text: "Train number"
 
-    MyTextField:
-        id: input_position
-        hint_text: "Manufacturer's UNP"
+    DialogWindow:
+        id: input_departure_station
+        size_hint: 1, .2
+        hint_text: "Departure station"
 
-    MyNumberField:
-        id: input_titles
-        hint_text: "Enter Quantity in stock"
+    DialogWindow:
+        id: input_arrival_station
+        size_hint: 1, .2
+        hint_text: "Arrival station"
 
-    MyTextField:
-        id: input_street
-        hint_text: "Enter Warehouse address"
+    # Departure time
+    BoxLayout:
+        size_hint: 1, .2
+        spacing: 10
+
+        MDLabel:
+            text: "Choose departure time: "
+
+        MDRaisedButton:
+            text: "Date"
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            on_release: root.input_departure_date_picker()
+
+        MDRaisedButton:
+            text: "Time"
+            pos_hint: {"center_x": .5, "center_y": .5}
+            on_release: root.input_departure_time_picker()
+
+    # Arrival time
+    BoxLayout:
+        size_hint: 1, .2
+        spacing: 10
+
+        MDLabel:
+            text: "Choose arrival time: "
+
+        MDRaisedButton:
+            text: "Date"
+            pos_hint: {"center_x": .5, "center_y": .5}
+            on_release: root.input_arrival_date_picker()
+
+        MDRaisedButton:
+            text: "Time"
+            pos_hint: {"center_x": .5, "center_y": .5}
+            on_release: root.input_arrival_time_picker()
+
 
 <FilterDialogContent>:
     height: "360dp"
-    product: filter_product
-    line_up: filter_line_up
-    position: filter_position
-    titles: filter_titles
-    street: filter_street
 
-    MyTextField:
-        id: filter_product
-        hint_text: "Enter Product Name"
+    MDRaisedButton:
+        text: "Train number or departure time"
+        size_hint: 1, .25
+        # on_release:
 
-    MyTextField:
-        id: filter_line_up
-        hint_text: "Enter Manufacturer's name"
+    MDRaisedButton:
+        text: "Departure time or arrival time diapason"
+        size_hint: 1, .25
+        # on_release:
 
-    MyTextField:
-        id: filter_position
-        hint_text: "Enter Manufacturer's UNP"
+    MDRaisedButton:
+        text: "Departure or arrival station"
+        size_hint: 1, .25
+        # on_release:
 
-    MyTextField:
-        id: filter_titles
-        hint_text: "Enter Quantity in stock"
+    MDRaisedButton:
+        text: "Travel time"
+        size_hint: 1, .25
+        # on_release:
 
-    MyTextField:
-        id: filter_street
-        hint_text: "Enter Warehouse address"
 
 <DeleteDialogContent>:
     height: "380dp"
+
     product: delete_product
     line_up: delete_line_up
     position: delete_position
     titles: delete_titles
     street: delete_street
 
-    MyTextField:
+    DialogWindow:
         id: delete_product
         hint_text: "Enter Product Name"
 
-    MyTextField:
+    DialogWindow:
         id: delete_line_up
         hint_text: "Enter Manufacturer's name"
 
-    MyTextField:
+    DialogWindow:
         id: delete_position
         hint_text: "Enter Manufacturer's UNP"
 
-    MyTextField:
+    DialogWindow:
         id: delete_titles
         hint_text: "Enter Quantity in stock"
 
-    MyTextField:
+    DialogWindow:
         id: delete_street
         hint_text: "Enter Warehouse address"

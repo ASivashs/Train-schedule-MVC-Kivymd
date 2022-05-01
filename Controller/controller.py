@@ -25,8 +25,8 @@ class MyScreenController:
     def get_screen(self):
         return self.view.build()
 
-    def input_stock(self, data):
-        self.model.add_new_stock(row=data)
+    def input_stock(self, input_elements):
+        self.model.input_new_elements(input_elements)
 
     def dialog(self, mode, dialog):
         self.open_dialog(mode, dialog)
@@ -35,14 +35,14 @@ class MyScreenController:
         return self.model.get_all_degrees()
 
     def filter_stock(self, data):
-        self.model.filter_stock_in_table(filters=data)
+        self.model.find_elements_in_table(filters=data)
 
     def delete_stock(self, data):
         delete_list = self.model.delete_from_table(filters=data)
         return delete_list
 
     def upload_from_file(self, file_name):
-        self.model.read_from_file(file_name)
+        self.model.load_from_file(file_name)
 
     def save_file(self, file_name):
         self.model.save_file(file_name)

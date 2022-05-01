@@ -1,5 +1,7 @@
 import os
-import Utils.dialog_windows as window
+
+import Utils.dialog_windows as dialog
+
 from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 from kivymd.uix.screen import MDScreen
@@ -12,8 +14,8 @@ class MyScreenView(MDScreen):
     controller = ObjectProperty()
     model = ObjectProperty()
 
-    def __init__(self, **kw):
-        super().__init__(**kw)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.model.add_observer(self)
         self.screen = Screen()
         self.dialog = None
@@ -21,15 +23,15 @@ class MyScreenView(MDScreen):
     def open_dialog(self, mode: str):
         """ Call input, filter and delete windows, save and upload """
         if mode == "input":
-            self.dialog = window.InputWindow(model=self.model, controller=self.controller)
+            self.dialog = dialog.InputWindow(model=self.model, controller=self.controller)
         elif mode == "filter":
-            self.dialog = window.FilterWindow(model=self.model, controller=self.controller)
+            self.dialog = dialog.FilterWindow(model=self.model, controller=self.controller)
         elif mode == "delete":
-            self.dialog = window.DeleteWindow(model=self.model, controller=self.controller)
+            self.dialog = dialog.DeleteWindow(model=self.model, controller=self.controller)
         elif mode == "upload":
-            self.dialog = window.UploadWindow(model=self.model, controller=self.controller)
+            self.dialog = dialog.UploadWindow(model=self.model, controller=self.controller)
         elif mode == "save":
-            self.dialog = window.SaveWindow(model=self.model, controller=self.controller)
+            self.dialog = dialog.SaveWindow(model=self.model, controller=self.controller)
         self.dialog.open()
         print(self.controller.dialog)
         self.controller.dialog(mode, self.dialog)

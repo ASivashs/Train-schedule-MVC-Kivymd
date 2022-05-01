@@ -16,7 +16,7 @@ class TrainSchedule:
 
     def add_element(self, train_number: str, departure_station: str, arrival_station: str,
                     departure_time: dt.datetime, arrival_time: dt.datetime):
-        """Add input element to dict."""
+        """Add element to dict."""
         if len(self._ids) >= 1000:
             raise "You can't add more then 1000 elements to table."
         new_id: str = str(randint(0, 1000))
@@ -32,8 +32,9 @@ class TrainSchedule:
             "travel time": arrival_time - departure_time
         }
 
-    def find_elements(self, filters: tuple | list, mode: str) -> dict | None:
-        """Find elements in train schedule and return dict with these elements."""
+    def find_elements(self, filters: tuple | list, mode: str = "number") -> dict | None:
+        """Find elements in train schedule and return
+        dict with these elements or None."""
         result: dict = {}
         format_string = "%Y-%m-%d %H:%M:%S"
         for key, value in self._train_schedule.items():
@@ -62,10 +63,11 @@ class TrainSchedule:
 
     def delete_elements(self, del_elements: dict) -> dict | None:
         """Find elements in train schedule and delete this elements.
-        Return deleted elements."""
+        Return deleted elements or None."""
         for key in list(self._train_schedule.keys())[:]:
             if key in set(del_elements.keys()):
                 del self._train_schedule[key]
+                self._ids -= key
                 print(f"Element {key} successfully deleted.")
         if not del_elements:
             return
@@ -93,7 +95,7 @@ class TrainSchedule:
 
             def startElement(self, name, attrs):
                 self.__current = name
-                if name == "train":
+                if name == "train" and attrs["id"]:
                     self.__current_id = attrs["id"]
                     self.__trains[self.__current_id] = {
                         "number": "",
@@ -118,34 +120,37 @@ class TrainSchedule:
 
             def endElement(self, name):
                 format_string = "%Y-%m-%d %H:%M:%S"
-                if self.__current == "number":
-                    self.__trains[self.__current_id]["number"] = self.__number
-                if self.__current == "departure_station":
-                    self.__trains[self.__current_id]["departure station"] = self.__departure_station
-                if self.__current == "arrival_station":
-                    self.__trains[self.__current_id]["arrival station"] = self.__arrival_station
-                if self.__current == "departure_time":
-                    self.__trains[self.__current_id]["departure time"] = dt.datetime.strptime(self.__departure_time,
-                                                                                              format_string)
-                if self.__current == "arrival_time":
-                    self.__trains[self.__current_id]["arrival time"] = dt.datetime.strptime(self.__arrival_time,
-                                                                                            format_string)
-                    self.__trains[self.__current_id]["travel time"] = self.__trains[self.__current_id]["arrival time"] - \
-                                                                      self.__trains[self.__current_id]["departure time"]
+                try:
+                    if self.__current == "number":
+                        self.__trains[self.__current_id]["number"] = self.__number
+                    if self.__current == "departure_station":
+                        self.__trains[self.__current_id]["departure station"] = self.__departure_station
+                    if self.__current == "arrival_station":
+                        self.__trains[self.__current_id]["arrival station"] = self.__arrival_station
+                    if self.__current == "departure_time":
+                        self.__trains[self.__current_id]["departure time"] = dt.datetime.strptime(self.__departure_time,
+                                                                                                  format_string)
+                    if self.__current == "arrival_time":
+                        self.__trains[self.__current_id]["arrival time"] = dt.datetime.strptime(self.__arrival_time,
+                                                                                                format_string)
+                        self.__trains[self.__current_id]["travel time"] = \
+                            self.__trains[self.__current_id]["arrival time"] - \
+                            self.__trains[self.__current_id]["departure time"]
+                except KeyError as err:
+                    print(err)
 
         schedule_parse = TrainHandler()
         try:
             xml.sax.parse(file_name, schedule_parse)
-        except OSError as err:
-            print(err)
+        except ValueError as err:
+            print(f"Unknown file: {file_name}\n{err}")
             return
         self._train_schedule = schedule_parse.trains
         self._ids = set(id for id in schedule_parse.trains.keys())
         return schedule_parse.trains
 
     def save_schedule_xml(self, xml_file_name: str = "trains.xml"):
-        """Save schedule in xml."""
-
+        """Save dict schedule to xml file."""
         xml_save = xml.dom.minidom.Document()
         trains_group = xml_save.createElement("trains")
 
