@@ -18,17 +18,17 @@
 
     path: save_path
 
-    DialogWindow:
+    DialogTextField:
         id: save_path
         hint_text: "Save file name"
 
 
 <UploadDialogContent>:
-    height: "50dp"
+    height: "60dp"
 
     path: upload_path
 
-    DialogWindow:
+    DialogTextField:
         id: upload_path
         hint_text: "Load file name"
 
@@ -40,17 +40,17 @@
     departure_station: input_departure_station
     arrival_station: input_arrival_station
 
-    DialogWindow:
+    DialogTextField:
         id: input_train_number
         size_hint: 1, .2
         hint_text: "Train number"
 
-    DialogWindow:
+    DialogTextField:
         id: input_departure_station
         size_hint: 1, .2
         hint_text: "Departure station"
 
-    DialogWindow:
+    DialogTextField:
         id: input_arrival_station
         size_hint: 1, .2
         hint_text: "Arrival station"
@@ -92,55 +92,142 @@
             on_release: root.input_arrival_time_picker()
 
 
+<NDDialogContent>:
+    height: "120dp"
+
+    number: nd_train_number
+
+    DialogTextField:
+        id: nd_train_number
+        size_hint: 1, .2
+        hint_text: "Train number"
+
+    BoxLayout:
+        size_hint: 1, .2
+        spacing: 10
+
+        MDLabel:
+            text: "Departure date:"
+
+        MDRaisedButton:
+            text: "Date"
+            pos_hint: {"right": 1}
+            on_release: root.nd_departure_date_picker()
+
+        MDRaisedButton:
+            text: "Time"
+            pos_hint: {"right": 1}
+            on_release: root.nd_departure_time_picker()
+
+
+<DADialogContent>:
+    height: "100dp"
+
+    BoxLayout:
+        size_hint: 1, .2
+
+        MDLabel:
+            text: "Enter departure date range:"
+
+        MDRaisedButton:
+            text: "Date range"
+            pos_hint: {"right": 1}
+            on_release: root.da_departure_date_picker()
+
+    BoxLayout:
+        size_hint: 1, .2
+
+        MDLabel:
+            text: "Enter arrival date range:"
+
+        MDRaisedButton:
+            text: "Date range"
+            pos_hint: {"right": 1}
+            on_release: root.da_arrival_date_picker()
+
+
+<DASDialogContent>:
+    height: "150dp"
+
+    departure_station: das_departure_station
+    arrival_station: das_arrival_station
+
+    DialogTextField:
+        id: das_departure_station
+        hint_text: "Departure station"
+        size_hint: 1, .2
+
+    DialogTextField:
+        id: das_arrival_station
+        hint_text: "Arrival station"
+        size_hint: 1, .2
+
+
+<TTDialogContent>:
+    height: "120dp"
+
+    days: travel_time_days
+
+    DialogTextField:
+        id: travel_time_days
+        hint_text: "Travel days"
+        size_hint: 1, .2
+
+    BoxLayout:
+        size_hint: 1, .2
+
+        MDLabel:
+            text: "Enter Travel time hours:"
+
+        MDRaisedButton:
+            text: "Time"
+            pos_hint: {"right": 1}
+            on_release: root.travel_time_time_picker()
+
+
 <FilterDialogContent>:
     height: "360dp"
 
     MDRaisedButton:
         text: "Train number or departure time"
         size_hint: 1, .25
-        # on_release:
+        on_release: root.number_or_departure_time_filter()
 
     MDRaisedButton:
         text: "Departure time or arrival time diapason"
         size_hint: 1, .25
-        # on_release:
+        on_release: root.departure_or_arrival_time_filter()
 
     MDRaisedButton:
         text: "Departure or arrival station"
         size_hint: 1, .25
-        # on_release:
+        on_release: root.departure_or_arrival_station_filter()
 
     MDRaisedButton:
         text: "Travel time"
         size_hint: 1, .25
-        # on_release:
+        on_release: root.travel_time_filter()
 
 
 <DeleteDialogContent>:
-    height: "380dp"
+    height: "360dp"
 
-    product: delete_product
-    line_up: delete_line_up
-    position: delete_position
-    titles: delete_titles
-    street: delete_street
+    MDRaisedButton:
+        text: "Train number or departure time"
+        size_hint: 1, .25
+        on_release: root.number_or_departure_time_filter()
 
-    DialogWindow:
-        id: delete_product
-        hint_text: "Enter Product Name"
+    MDRaisedButton:
+        text: "Departure time or arrival time diapason"
+        size_hint: 1, .25
+        on_release: root.departure_or_arrival_time_filter()
 
-    DialogWindow:
-        id: delete_line_up
-        hint_text: "Enter Manufacturer's name"
+    MDRaisedButton:
+        text: "Departure or arrival station"
+        size_hint: 1, .25
+        on_release: root.departure_or_arrival_station_filter()
 
-    DialogWindow:
-        id: delete_position
-        hint_text: "Enter Manufacturer's UNP"
-
-    DialogWindow:
-        id: delete_titles
-        hint_text: "Enter Quantity in stock"
-
-    DialogWindow:
-        id: delete_street
-        hint_text: "Enter Warehouse address"
+    MDRaisedButton:
+        text: "Travel time"
+        size_hint: 1, .25
+        on_release: root.travel_time_filter()

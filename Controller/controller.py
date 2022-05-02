@@ -35,7 +35,7 @@ class MyScreenController:
         return self.model.get_all_degrees()
 
     def filter_stock(self, data):
-        self.model.find_elements_in_table(filters=data)
+        self.model.find_elements_in_table(data)
 
     def delete_stock(self, data):
         delete_list = self.model.delete_from_table(filters=data)

@@ -98,7 +98,7 @@ class MyScreenModel:
     def find_elements_in_table(self, find_elements: tuple | list):
         """Find elements and load it to table."""
         self.__clear_table()
-        self.load_elements_to_table(self.__train_schedule.find_elements(find_elements))
+        self.load_elements_to_table(self.__train_schedule.find_elements(find_elements[0], find_elements[1]))
 
     # def refresh_stock_in_table(self):
     #     try:

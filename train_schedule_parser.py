@@ -35,28 +35,60 @@ class TrainSchedule:
     def find_elements(self, filters: tuple | list, mode: str = "number") -> dict | None:
         """Find elements in train schedule and return
         dict with these elements or None."""
+        print(filters)
         result: dict = {}
         format_string = "%Y-%m-%d %H:%M:%S"
         for key, value in self._train_schedule.items():
             match mode:
                 case "number":
-                    if filters[0] == value["number"] or \
-                            dt.datetime.strptime(filters[1], format_string) == value["departure time"]:
+                    if filters[0] and filters[1][0] and filters[1][1] and (filters[0] == value["number"] or
+                                                                           dt.datetime.strptime(filters[1], format_string) ==
+                                                                           value["departure time"]):
                         result[key] = self._train_schedule[key]
+                        continue
+                    elif filters[0] and not filters[1] and filters[0] == value["number"]:
+                        result[key] = self._train_schedule[key]
+                        continue
+                    elif not filters[0] and not filters[1] and filters[1] == value["departure time"]:
+                        result[key] = self._train_schedule[key]
+                        continue
                 case "time":
-                    if dt.datetime.strptime(filters[0], format_string) <= value["departure time"] <= \
-                            dt.datetime.strptime(filters[1], format_string) or \
-                            dt.datetime.strptime(filters[0], format_string) <= value["arrival time"] <= \
-                            dt.datetime.strptime(filters[1], format_string):
+                    # Check element exist and condition
+                    if filters[0][0] and filters[0][1] and (dt.datetime.strptime(filters[0][0], format_string) <=
+                                                            value["departure time"] <=
+                                                            dt.datetime.strptime(filters[0][1], format_string)):
                         result[key] = self._train_schedule[key]
+                        continue
+                    elif filters[1][0] and filters[1][1] and (dt.datetime.strptime(filters[1][0], format_string) <=
+                                                              value["arrival time"] <=
+                                                              dt.datetime.strptime(filters[1][1], format_string)):
+                        result[key] = self._train_schedule[key]
+                        continue
                 case "station":
                     if filters[0] == value["departure station"] or \
                             filters[1] == value["arrival station"]:
                         result[key] = self._train_schedule[key]
+                        continue
                 case "travel time":
-                    if value["travel time"] <= \
-                            dt.datetime.strptime(filters[0], "%H:%M:%S") - dt.datetime.strptime("00:00:00", "%H:%M:%S"):
-                        result[key] = self._train_schedule[key]
+                    # Check element exist and condition
+                    if filters[0] and filters[1]:
+                        if value["travel time"] <= \
+                                dt.datetime.strptime(f"{filters[0]} {filters[1]}", "%Y-%m-%d %H:%M:%S") - \
+                                dt.datetime.strptime("00-00-00 00:00:00", "%Y-%m-%d %H:%M:%S"):
+                            result[key] = self._train_schedule[key]
+                        continue
+                    if filters[0] and not filters[1]:
+                        if value["travel time"] <= \
+                                dt.datetime.strptime(f"{filters[0]} 00:00:00", "%Y-%m-%d %H:%M:%S") - \
+                                dt.datetime.strptime("00-00-00 00:00:00", "%Y-%m-%d %H:%M:%S"):
+                            result[key] = self._train_schedule[key]
+                            continue
+                    if not filters[0] and filters[1]:
+                        if value["travel time"] <= \
+                                dt.datetime.strptime(f"00-00-00 {filters[1]}", "%Y-%m-%d %H:%M:%S") - \
+                                dt.datetime.strptime("00-00-00 00:00:00", "%Y-%m-%d %H:%M:%S"):
+                            result[key] = self._train_schedule[key]
+                            continue
         if not result:
             return
         return result

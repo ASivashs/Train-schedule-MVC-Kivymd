@@ -54,9 +54,6 @@ class MyScreenView(MDScreen):
         """ The method is called when the Model changes. """
         self.close_dialog(data)
 
-    def refresh(self):
-        self.controller.refresh()
-
     def build(self):
         self.add_widget(self.model.table)
         return self
