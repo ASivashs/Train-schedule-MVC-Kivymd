@@ -34,12 +34,13 @@ class MyScreenController:
     def get_degrees(self):
         return self.model.get_all_degrees()
 
-    def filter_stock(self, data):
-        self.model.find_elements_in_table(data)
+    def filter_stock(self, data, filter_mode):
+        print("Controller:", data)
+        self.model.find_elements_in_table(data, filter_mode)
 
-    def delete_stock(self, data):
-        delete_list = self.model.delete_from_table(filters=data)
-        return delete_list
+    def delete_stock(self, filter_by, delete_mode):
+        if delete_mode:
+            return self.model.delete_from_table(filter_by, delete_mode)
 
     def upload_from_file(self, file_name):
         self.model.load_from_file(file_name)

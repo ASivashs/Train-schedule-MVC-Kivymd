@@ -3,9 +3,14 @@ import datetime as dt
 
 from kivy.uix.boxlayout import BoxLayout
 from kivy.lang import Builder
+from kivy.metrics import dp
+from kivy.properties import StringProperty
+
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.picker import MDDatePicker, MDTimePicker
+from kivymd.uix.list import OneLineIconListItem
+from kivymd.uix.menu import MDDropdownMenu
 
 
 # Dialog windows content
@@ -125,12 +130,10 @@ class NDDialogContent(DialogContent):
 
     @property
     def nd_departure_date(self):
-        print(f"nd_departure_date: {self._nd_departure_date}")
         return self._nd_departure_date
 
     @property
     def nd_departure_time(self):
-        print(f"nd_departure_time: {self._nd_departure_time}")
         return self._nd_departure_time
 
     # Departure date widget
@@ -171,40 +174,6 @@ class NDDialogContent(DialogContent):
         self._nd_departure_time = time
 
 
-# Call ND dialog window
-class ND_Dialog(MDDialog):
-    def __init__(self):
-        super(ND_Dialog, self).__init__(
-            title="Filter by number or departure time",
-            type="custom",
-            content_cls=NDDialogContent(),
-            buttons=[
-                MDFlatButton(
-                    text="OK",
-                    theme_text_color="Custom",
-                    on_release=self.close
-                )
-            ]
-        )
-        self.data = ()
-
-    def close(self, obj):
-        self.dismiss()
-        nd_time = None
-        if self.content_cls.nd_departure_date and self.content_cls.nd_departure_time:
-            nd_time = dt.datetime.strptime(f"{self.content_cls.nd_departure_date} {self.content_cls.nd_departure_time}",
-                                           "%Y-%m-%d %H:%M:%S")
-        elif self.content_cls.nd_departure_date and not self.content_cls.nd_departure_time:
-            nd_time = (self.content_cls.nd_departure_date, None)
-        elif not self.content_cls.nd_departure_date and self.content_cls.nd_departure_time:
-            nd_time = (None, self.content_cls.nd_departure_time)
-        self.data = (
-            self.content_cls.ids.nd_train_number.text if self.content_cls.ids.nd_train_number.text else None,
-            nd_time
-        )
-        print(f"ND_Dialog: {self.data}")
-
-
 class DADialogContent(DialogContent):
     """Dialog window called in Filter and Delete.
     In this window you can choose departure date range or arrival date range.
@@ -231,7 +200,7 @@ class DADialogContent(DialogContent):
             radius=[26, 26, 26, 26]
         )
         date_dialog.bind(
-            on_save=self.nd_departure_date_picker_on_save,
+            on_save=self.da_departure_date_picker_on_save,
             on_cancel=self.date_picker_on_cancel
         )
         date_dialog.open()
@@ -250,50 +219,17 @@ class DADialogContent(DialogContent):
     # OK option for departure date widget
     def da_departure_date_picker_on_save(self, instance, value, date_range):
         print(instance, value, date_range)
-        self.__departure_date_range = ((value[0], value[-1]), None)
+        self.__departure_date_range = ((date_range[0], date_range[-1]), None)
 
     # OK option for arrival date widget
     def da_arrival_date_picker_on_save(self, instance, value, date_range):
         print(instance, value, date_range)
-        self.__arrival_date_range = (None, (value[0], value[-1]))
+        self.__arrival_date_range = (None, (date_range[0], date_range[-1]))
 
     # Cancel option for date widget
     @staticmethod
     def date_picker_on_cancel(instance, value):
         pass
-
-
-# Call DA dialog window
-class DA_Dialog(MDDialog):
-    def __init__(self):
-        super(DA_Dialog, self).__init__(
-            title="Filter by departure or arrival time",
-            type="custom",
-            content_cls=DADialogContent(),
-            buttons=[
-                MDFlatButton(
-                    text="OK",
-                    theme_text_color="Custom",
-                    on_release=self.close
-                )
-            ]
-        )
-        self.data = ()
-
-    def close(self, obj):
-        self.dismiss()
-        self.data = (
-            (
-                (
-                    self.content_cls.departure_date_range[0],
-                    self.content_cls.departure_date_range[-1]
-                ) if self.content_cls.departure_date_range else None,
-                (
-                    self.content_cls.arrival_date_range[0],
-                    self.content_cls.arrival_date_range[-1]
-                ) if self.content_cls.arrival_date_range else None
-            )
-        )
 
 
 class DASDialogContent(DialogContent):
@@ -303,33 +239,6 @@ class DASDialogContent(DialogContent):
     1. Dialog textfield for enter departure station;
     2. Dialog textfield for enter arrival station."""
     pass
-
-
-# Call DAS dialog window
-class DAS_Dialog(MDDialog):
-    def __init__(self):
-        super(DAS_Dialog, self).__init__(
-            title="Filter by departure or arrival station",
-            type="custom",
-            content_cls=DASDialogContent(),
-            buttons=[
-                MDFlatButton(
-                    text="OK",
-                    theme_text_color="Custom",
-                    on_release=self.close
-                )
-            ]
-        )
-        self.data = ()
-
-    def close(self, obj):
-        self.dismiss()
-        self.data = (
-            (
-                self.content_cls.ids.das_departure_station.text if self.content_cls.ids.das_departure_station.text else None,
-                self.content_cls.ids.das_arrival_station.text if self.content_cls.ids.das_arrival_station.text else None
-            )
-        )
 
 
 class TTDialogContent(DialogContent):
@@ -362,40 +271,20 @@ class TTDialogContent(DialogContent):
         self.__travel_time_time = time
 
 
-# Call TT dialog window
-class TT_Dialog(MDDialog):
-    def __init__(self):
-        super(TT_Dialog, self).__init__(
-            title="Filter by travel time",
-            type="custom",
-            content_cls=TTDialogContent(),
-            buttons=[
-                MDFlatButton(
-                    text="OK",
-                    theme_text_color="Custom",
-                    on_release=self.close
-                )
-            ]
-        )
-        self.data = ()
+# Some icons for Dropdown items
+class IconListItem(OneLineIconListItem):
+    icon = StringProperty()
 
-    def close(self, obj):
-        self.dismiss()
-        # self.data = (
-        #     (
-        #         self.content_cls.ids.travel_time_days.text if self.content_cls.ids.travel_time_days.text else None,
-        #         self.content_cls.travel_time_time if self.content_cls.travel_time_time else None
-        #     )
-        # )
 
-    def delete(self, obj):
-        self.data = (
-            (
-                self.content_cls.ids.travel_time_days.text if self.content_cls.ids.travel_time_days.text else None,
-                self.content_cls.travel_time_time if self.content_cls.travel_time_time else None
-            )
-        )
-        self.close(obj)
+KV_filter = '''
+MDScreen
+
+    MDDropDownItem:
+        id: drop_item
+        pos_hint: {'top': 4, "right": 6}
+        text: 'Delete by'
+        on_release: root.menu.open()
+'''
 
 
 class FilterDialogContent(DialogContent):
@@ -408,49 +297,67 @@ class FilterDialogContent(DialogContent):
     4. Travel time."""
     def __init__(self):
         super(FilterDialogContent, self).__init__()
-        self.__filter_mode: str = ''
-        self.__find_by: tuple | list = []
-        self.__dialog = None
-
-    @property
-    def find_by(self):
-        return self.__find_by
+        self.screen = Builder.load_string(KV_filter)
+        self.menu_items = [
+            {
+                "viewclass": "IconListItem",
+                "icon": "git",
+                "text": "Train number and departure date and time",
+                "height": dp(56),
+                "on_release": lambda x="number": self.set_item(x),
+            },
+            {
+                "viewclass": "IconListItem",
+                "icon": "git",
+                "text": "Departure and arrival date",
+                "height": dp(56),
+                "on_release": lambda x="time": self.set_item(x),
+            },
+            {
+                "viewclass": "IconListItem",
+                "icon": "git",
+                "text": "Departure and arrival station",
+                "height": dp(56),
+                "on_release": lambda x="station": self.set_item(x),
+            },
+            {
+                "viewclass": "IconListItem",
+                "icon": "git",
+                "text": "Travel time",
+                "height": dp(56),
+                "on_release": lambda x="travel time": self.set_item(x),
+            },
+        ]
+        self.menu = MDDropdownMenu(
+            caller=self.screen.ids.drop_item,
+            items=self.menu_items,
+            width_mult=dp(8),
+        )
+        self.menu.bind()
+        self.__filter_mode = ""
 
     @property
     def filter_mode(self):
         return self.__filter_mode
 
-    def number_or_departure_time_filter(self):
-        self.__filter_mode = "number"
-
-        ND = ND_Dialog()
-        ND.open()
-        self.__find_by = ND.data
-        print(f"number_or_departure_time_filter: {ND.data}")
-
-    def departure_or_arrival_time_filter(self):
-        self.__filter_mode = "time"
-
-        ND = DA_Dialog()
-        ND.open()
-        self.__find_by = ND.data
-
-    def departure_or_arrival_station_filter(self):
-        self.__filter_mode = "station"
-
-        DAS = DAS_Dialog()
-        DAS.open()
-        self.__find_by = DAS.data
-
-    def travel_time_filter(self):
-        self.__filter_mode = "travel time"
-
-        TT = TT_Dialog()
-        TT.open()
-        self.__find_by = TT.data
+    def set_item(self, text_item):
+        self.__filter_mode = text_item
+        self.screen.ids.drop_item.set_item(text_item)
+        self.menu.dismiss()
 
 
-class DeleteDialogContent(DialogContent):
+KV_delete = '''
+MDScreen
+
+    MDDropDownItem:
+        id: drop_item
+        pos_hint: {'top': 4, "right": 6}
+        text: 'Delete by'
+        on_release: root.menu.open()
+'''
+
+
+class DeleteDialogContent(BoxLayout):
     """Filter dialog window that contains 4 buttons who also called dialog windows.
     You can choose delete mode and enter delete params.
     This window contains:
@@ -460,45 +367,53 @@ class DeleteDialogContent(DialogContent):
     4. Travel time."""
     def __init__(self):
         super(DeleteDialogContent, self).__init__()
-        self.__delete_mode: str = ''
-        self.__find_by: tuple | list = []
-        self.__dialog = None
-
-    @property
-    def find_by(self):
-        return self.__find_by
+        self.screen = Builder.load_string(KV_delete)
+        self.menu_items = [
+            {
+                "viewclass": "IconListItem",
+                "icon": "git",
+                "text": "Train number and departure date and time",
+                "height": dp(56),
+                "on_release": lambda x="number": self.set_item(x),
+            },
+            {
+                "viewclass": "IconListItem",
+                "icon": "git",
+                "text": "Departure and arrival date",
+                "height": dp(56),
+                "on_release": lambda x="time": self.set_item(x),
+            },
+            {
+                "viewclass": "IconListItem",
+                "icon": "git",
+                "text": "Departure and arrival station",
+                "height": dp(56),
+                "on_release": lambda x="station": self.set_item(x),
+            },
+            {
+                "viewclass": "IconListItem",
+                "icon": "git",
+                "text": "Travel time",
+                "height": dp(56),
+                "on_release": lambda x="travel time": self.set_item(x),
+            },
+        ]
+        self.menu = MDDropdownMenu(
+            caller=self.screen.ids.drop_item,
+            items=self.menu_items,
+            width_mult=dp(8),
+        )
+        self.menu.bind()
+        self.__delete_mode = ""
 
     @property
     def delete_mode(self):
         return self.__delete_mode
 
-    def number_or_departure_time_filter(self):
-        self.__delete_mode = "number"
-
-        ND = ND_Dialog()
-        ND.open()
-        self.__find_by = ND.data
-
-    def departure_or_arrival_time_filter(self):
-        self.__delete_mode = "time"
-
-        ND = DA_Dialog()
-        ND.open()
-        self.__find_by = ND.data
-
-    def departure_or_arrival_station_filter(self):
-        self.__delete_mode = "station"
-
-        DAS = DAS_Dialog()
-        DAS.open()
-        self.__find_by = DAS.data
-
-    def travel_time_filter(self):
-        self.__delete_mode = "travel time"
-
-        TT = TT_Dialog()
-        TT.open()
-        self.__find_by = TT.data
+    def set_item(self, text_item):
+        self.__delete_mode = text_item
+        self.screen.ids.drop_item.set_item(text_item)
+        self.menu.dismiss()
 
 
 class UploadDialogContent(DialogContent):
@@ -552,7 +467,7 @@ class InputWindow(DialogWindow):
     def close(self, obj):
         self.dismiss()
         self.controller.close_dialog(
-            [
+            (
                 self.content_cls.ids.input_train_number.text,
                 self.content_cls.ids.input_departure_station.text,
                 self.content_cls.ids.input_arrival_station.text,
@@ -564,7 +479,139 @@ class InputWindow(DialogWindow):
                     f"{self.content_cls.input_arrival_date} {self.content_cls.input_arrival_time}",
                     "%Y-%m-%d %H:%M:%S"
                 )
+            )
+        )
+
+
+# Call ND dialog window
+class ND_Dialog(DialogWindow):
+    def __init__(self, **kwargs):
+        super(ND_Dialog, self).__init__(
+            title="Filter by number or departure time",
+            type="custom",
+            mode="ND",
+            content_cls=NDDialogContent(),
+            controller=kwargs["controller"],
+            model=kwargs["model"],
+            buttons=[
+                MDFlatButton(
+                    text="OK",
+                    theme_text_color="Custom",
+                    on_release=self.close
+                )
             ]
+        )
+
+    def close(self, obj):
+        self.dismiss()
+        nd_time = None
+        if self.content_cls.nd_departure_date and self.content_cls.nd_departure_time:
+            nd_time = dt.datetime.strptime(f"{self.content_cls.nd_departure_date} {self.content_cls.nd_departure_time}",
+                                           "%Y-%m-%d %H:%M:%S")
+        elif self.content_cls.nd_departure_date and not self.content_cls.nd_departure_time:
+            nd_time = (self.content_cls.nd_departure_date, None)
+        elif not self.content_cls.nd_departure_date and self.content_cls.nd_departure_time:
+            nd_time = (None, self.content_cls.nd_departure_time)
+        self.controller.close_dialog(
+            (
+                self.content_cls.ids.nd_train_number.text if self.content_cls.ids.nd_train_number.text else None,
+                nd_time
+            )
+        )
+
+
+# Call DA dialog window
+class DA_Dialog(DialogWindow):
+    def __init__(self, **kwargs):
+        super(DA_Dialog, self).__init__(
+            title="Filter by departure or arrival time",
+            type="custom",
+            mode="DA",
+            content_cls=DADialogContent(),
+            controller=kwargs["controller"],
+            model=kwargs["model"],
+            buttons=[
+                MDFlatButton(
+                    text="OK",
+                    theme_text_color="Custom",
+                    on_release=self.close
+                )
+            ]
+        )
+        self.data = ()
+
+    def close(self, obj):
+        self.dismiss()
+        self.controller.close_dialog(
+            (
+                (
+                    self.content_cls.departure_date_range[0][0],
+                    self.content_cls.departure_date_range[0][1]
+                ) if self.content_cls.departure_date_range else None,
+                (
+                    self.content_cls.arrival_date_range[1][0],
+                    self.content_cls.arrival_date_range[1][1]
+                ) if self.content_cls.arrival_date_range else None
+            )
+        )
+
+
+# Call DAS dialog window
+class DAS_Dialog(DialogWindow):
+    def __init__(self, **kwargs):
+        super(DAS_Dialog, self).__init__(
+            title="Filter by departure or arrival station",
+            type="custom",
+            mode="DAS",
+            content_cls=DASDialogContent(),
+            controller=kwargs["controller"],
+            model=kwargs["model"],
+            buttons=[
+                MDFlatButton(
+                    text="OK",
+                    theme_text_color="Custom",
+                    on_release=self.close
+                )
+            ]
+        )
+        self.data = ()
+
+    def close(self, obj):
+        self.dismiss()
+        self.controller.close_dialog(
+            (
+                self.content_cls.ids.das_departure_station.text if self.content_cls.ids.das_departure_station.text else None,
+                self.content_cls.ids.das_arrival_station.text if self.content_cls.ids.das_arrival_station.text else None
+            )
+        )
+
+
+# Call TT dialog window
+class TT_Dialog(DialogWindow):
+    def __init__(self, **kwargs):
+        super(TT_Dialog, self).__init__(
+            title="Filter by travel time",
+            type="custom",
+            mode="TT",
+            content_cls=TTDialogContent(),
+            controller=kwargs["controller"],
+            model=kwargs["model"],
+            buttons=[
+                MDFlatButton(
+                    text="OK",
+                    theme_text_color="Custom",
+                    on_release=self.close
+                )
+            ]
+        )
+
+    def close(self, obj):
+        self.dismiss()
+        self.controller.close_dialog(
+            (
+                self.content_cls.ids.travel_time_days.text if self.content_cls.ids.travel_time_days.text else None,
+                self.content_cls.travel_time_time if self.content_cls.travel_time_time else None
+            )
         )
 
 
@@ -582,10 +629,7 @@ class FilterWindow(DialogWindow):
     def close(self, obj):
         self.dismiss()
         self.controller.close_dialog(
-            (
-                self.content_cls.ids.find_by,
-                self.content_cls.ids.filter_mode
-            )
+            self.content_cls.filter_mode
         )
 
 
@@ -603,10 +647,7 @@ class DeleteWindow(DialogWindow):
     def close(self, obj):
         self.dismiss()
         self.controller.close_dialog(
-            (
-                self.content_cls.find_by,
-                self.content_cls.delete_mode
-            )
+            self.content_cls.delete_mode
         )
 
 

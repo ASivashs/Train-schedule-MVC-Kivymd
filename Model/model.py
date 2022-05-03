@@ -38,6 +38,8 @@ class MyScreenModel:
 
     def load_elements_to_table(self, elements: dict):
         """Add elements to datatable."""
+        if not elements:
+            return
         for element in elements.values():
             self.__add_to_table(
                 (
@@ -79,66 +81,19 @@ class MyScreenModel:
             print(err)
             Snackbar(text=f"{err}").open()
 
-    def delete_from_table(self, delete_elements: dict):
-        """Delete elements from data table and dict by key."""
-        if not delete_elements:
-            return
-        self.__train_schedule.delete_elements(delete_elements)
-        self.__clear_table()
-        self.load_elements_to_table(self.__train_schedule.train_schedule)
-
     def __clear_table(self):
         """Delete all elements from table."""
-        if not self.table.row_data:
-            print("Table has already been cleared.")
-            Snackbar(text="Table has already been cleared.").open()
-            return
-        self.__table = []
+        for row in self.table.row_data[:]:
+            self.__table.row_data.remove(row)
 
-    def find_elements_in_table(self, find_elements: tuple | list):
+    def find_elements_in_table(self, find_elements: tuple | list, find_mode: str):
         """Find elements and load it to table."""
         self.__clear_table()
-        self.load_elements_to_table(self.__train_schedule.find_elements(find_elements[0], find_elements[1]))
+        print("find_elements_in_table(model):", find_elements)
+        self.load_elements_to_table(self.__train_schedule.find_elements(find_elements, find_mode))
 
-    # def refresh_stock_in_table(self):
-    #     try:
-    #         self.table.row_data += self._not_filtered
-    #         self._not_filtered = []
-    #     except Exception as e:
-    #         pass
-    #
-    # def select_stock_by_filters(self, filters: list):
-    #     not_filtered_stock = []
-    #     for row in self.table.row_data:
-    #         # first case
-    #         if filters[0] or filters[3]:  # product
-    #             if not (row[0] == filters[0] or row[3] == filters[3]):
-    #                 not_filtered_stock.append(tuple(row))
-    #                 print(len(not_filtered_stock))
-    #                 continue
-    #         # second case
-    #         elif filters[1] or filters[2]:  # product
-    #             if not (row[1] == filters[1] or row[2] == filters[2]):
-    #                 not_filtered_stock.append(tuple(row))
-    #                 print(len(not_filtered_stock))
-    #                 continue
-    #         # third case
-    #         elif filters[4]:
-    #             if re.match(r'\d{1,5}\s\w.\s(\b\w*\b\s){1,2}\w*\.', filters[3]):
-    #                 start, end = filters[4].split('-')
-    #                 if int(row[4]) not in range(int(start), int(end) + 1):
-    #                     not_filtered_stock.append(tuple(row))
-    #                     continue
-    #     return not_filtered_stock
-    #
-    # def filter_stock_in_table(self, filters: list):
-    #     self._not_filtered = self.select_stock_by_filters(filters=filters)
-    #     for row in self._not_filtered:
-    #         self.table.row_data.remove(row)
-    #
-    # @staticmethod
-    # def empty_filters(filters):
-    #     for filter in filters:
-    #         if filter != '':
-    #             return False
-    #     return True
+    def delete_from_table(self, delete_elements: tuple | list, delete_mode: str):
+        """Delete elements from data table and dict by key."""
+        self.__train_schedule.delete_elements(delete_elements, delete_mode)
+        self.__clear_table()
+        self.load_elements_to_table(self.__train_schedule.train_schedule)

@@ -185,49 +185,26 @@
             on_release: root.travel_time_time_picker()
 
 
+<IconListItem>
+    IconLeftWidget:
+        icon: root.icon
+
+
 <FilterDialogContent>:
-    height: "360dp"
+    height: "30dp"
 
-    MDRaisedButton:
-        text: "Train number or departure time"
-        size_hint: 1, .25
-        on_release: root.number_or_departure_time_filter()
-
-    MDRaisedButton:
-        text: "Departure time or arrival time diapason"
-        size_hint: 1, .25
-        on_release: root.departure_or_arrival_time_filter()
-
-    MDRaisedButton:
-        text: "Departure or arrival station"
-        size_hint: 1, .25
-        on_release: root.departure_or_arrival_station_filter()
-
-    MDRaisedButton:
-        text: "Travel time"
-        size_hint: 1, .25
-        on_release: root.travel_time_filter()
+    MDDropDownItem:
+        id: drop_item
+        # pos_hint: {"center_x": .5, "center_y": .5}
+        text: "Filter by"
+        on_release: root.menu.open()
 
 
 <DeleteDialogContent>:
     height: "360dp"
 
-    MDRaisedButton:
-        text: "Train number or departure time"
-        size_hint: 1, .25
-        on_release: root.number_or_departure_time_filter()
-
-    MDRaisedButton:
-        text: "Departure time or arrival time diapason"
-        size_hint: 1, .25
-        on_release: root.departure_or_arrival_time_filter()
-
-    MDRaisedButton:
-        text: "Departure or arrival station"
-        size_hint: 1, .25
-        on_release: root.departure_or_arrival_station_filter()
-
-    MDRaisedButton:
-        text: "Travel time"
-        size_hint: 1, .25
-        on_release: root.travel_time_filter()
+    MDDropDownItem:
+        id: drop_item
+        pos_hint: {"center_x": .5, "center_y": .5}
+        text: "Delete by"
+        on_release: root.menu.open()
