@@ -45,7 +45,7 @@ class MyScreenController:
     def upload_from_file(self, file_name):
         self.model.load_from_file(file_name)
 
-    def save_file(self, file_name):
+    def save_in_file(self, file_name):
         self.model.save_file(file_name)
 
     def open_dialog(self, dialog, mode):
@@ -55,3 +55,6 @@ class MyScreenController:
         data = dialog_data
         self.model.notify_observers(data)
         self.dialog_ = None
+
+    def update(self):
+        self.model.refresh_table()

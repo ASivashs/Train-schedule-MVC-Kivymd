@@ -48,24 +48,21 @@ class MyScreenModel:
                 )
             )
 
+    def refresh_table(self):
+        self.__clear_table()
+        self.load_elements_to_table(self.__train_schedule.train_schedule)
+
     def load_from_file(self, file_name: str):
         """Load saved trains schedule and add it in table."""
-        try:
-            self.__train_schedule.load_schedule_xml(file_name)
-        except Exception as err:
-            print(err)
-            Snackbar(text="This file doesn't exist.").open()
+        res = self.__train_schedule.load_schedule_xml(file_name)
+        if not res:
+            Snackbar(text="This file is unavailable.").open()
             return
         self.load_elements_to_table(self.__train_schedule.train_schedule)
 
     def save_file(self, file_name: str):
         """Save train schedule in xml."""
-        try:
-            self.__train_schedule.save_schedule_xml(file_name)
-        except Exception as err:
-            print(err)
-            Snackbar(text="This file doesnt exist.").open()
-            return
+        self.__train_schedule.save_schedule_xml(file_name)
 
     def __add_to_table(self, data: tuple | list):
         """Add one element to table."""
@@ -94,6 +91,10 @@ class MyScreenModel:
 
     def delete_from_table(self, delete_elements: tuple | list, delete_mode: str):
         """Delete elements from data table and dict by key."""
-        self.__train_schedule.delete_elements(delete_elements, delete_mode)
+        del_elements = self.__train_schedule.delete_elements(delete_elements, delete_mode)
+        if del_elements:
+            Snackbar(text=f"Deleted {len(list(del_elements.keys()))} from table.").open()
+        else:
+            Snackbar(text="Deleted 0 elements from table.").open()
         self.__clear_table()
         self.load_elements_to_table(self.__train_schedule.train_schedule)

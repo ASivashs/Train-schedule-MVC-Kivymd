@@ -85,11 +85,11 @@ class TrainSchedule:
         """Find elements in train schedule and delete this elements.
         Return deleted elements or None."""
         elements_for_del = self.find_elements(del_elements, delete_mode)
+        if not elements_for_del:
+            return
         for key in list(self._train_schedule.keys())[:]:
             if key in list(elements_for_del.keys()):
                 self._train_schedule.pop(key)
-        if not elements_for_del:
-            return
         return elements_for_del
 
     def load_schedule_xml(self, file_name: str = "trains.xml") -> dict | None:
@@ -168,8 +168,11 @@ class TrainSchedule:
         self._ids = set(id for id in schedule_parse.trains.keys())
         return schedule_parse.trains
 
-    def save_schedule_xml(self, xml_file_name: str = "trains.xml"):
+    def save_schedule_xml(self, xml_file_name: str):
         """Save dict schedule to xml file."""
+        if not xml_file_name.find(".xml"):
+            xml_file_name += ".xml"
+
         xml_save = xml.dom.minidom.Document()
         trains_group = xml_save.createElement("trains")
 

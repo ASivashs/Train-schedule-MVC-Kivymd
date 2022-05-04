@@ -466,21 +466,23 @@ class InputWindow(DialogWindow):
 
     def close(self, obj):
         self.dismiss()
-        self.controller.close_dialog(
-            (
-                self.content_cls.ids.input_train_number.text,
-                self.content_cls.ids.input_departure_station.text,
-                self.content_cls.ids.input_arrival_station.text,
-                dt.datetime.strptime(
-                    f"{self.content_cls.input_departure_date} {self.content_cls.input_departure_time}",
-                    "%Y-%m-%d %H:%M:%S"
-                ),
-                dt.datetime.strptime(
-                    f"{self.content_cls.input_arrival_date} {self.content_cls.input_arrival_time}",
-                    "%Y-%m-%d %H:%M:%S"
+        if self.content_cls.input_departure_date and self.content_cls.input_departure_time and \
+                self.content_cls.input_arrival_date and self.content_cls.input_arrival_time:
+            self.controller.close_dialog(
+                (
+                    self.content_cls.ids.input_train_number.text,
+                    self.content_cls.ids.input_departure_station.text,
+                    self.content_cls.ids.input_arrival_station.text,
+                    dt.datetime.strptime(
+                        f"{self.content_cls.input_departure_date} {self.content_cls.input_departure_time}",
+                        "%Y-%m-%d %H:%M:%S"
+                    ),
+                    dt.datetime.strptime(
+                        f"{self.content_cls.input_arrival_date} {self.content_cls.input_arrival_time}",
+                        "%Y-%m-%d %H:%M:%S"
+                    )
                 )
             )
-        )
 
 
 # Call ND dialog window
