@@ -96,5 +96,4 @@ class MyScreenModel:
             Snackbar(text=f"Deleted {len(list(del_elements.keys()))} from table.").open()
         else:
             Snackbar(text="Deleted 0 elements from table.").open()
-        self.__clear_table()
-        self.load_elements_to_table(self.__train_schedule.train_schedule)
+        self.refresh_table()
