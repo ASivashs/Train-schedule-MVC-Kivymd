@@ -19,25 +19,26 @@ class MyScreenView(MDScreen):
         self.dialog = []
 
     def open_dialog(self, mode: str):
-        """ Call input, filter and delete windows, save and upload """
-        if mode == "input":
-            self.dialog.append(dialog.InputWindow(model=self.model, controller=self.controller))
-        elif mode == "filter":
-            self.dialog.append(dialog.FilterWindow(model=self.model, controller=self.controller))
-        elif mode == "delete":
-            self.dialog.append(dialog.DeleteWindow(model=self.model, controller=self.controller))
-        elif mode == "upload":
-            self.dialog.append(dialog.UploadWindow(model=self.model, controller=self.controller))
-        elif mode == "save":
-            self.dialog.append(dialog.SaveWindow(model=self.model, controller=self.controller))
-        elif mode == "ND":
-            self.dialog.append(dialog.ND_Dialog(model=self.model, controller=self.controller, mode=mode))
-        elif mode == "DA":
-            self.dialog.append(dialog.DA_Dialog(model=self.model, controller=self.controller, mode=mode))
-        elif mode == "DAS":
-            self.dialog.append(dialog.DAS_Dialog(model=self.model, controller=self.controller, mode=mode))
-        elif mode == "TT":
-            self.dialog.append(dialog.TT_Dialog(model=self.model, controller=self.controller, mode=mode))
+        """ Call input, filter and delete windows, save and upload."""
+        match mode:
+            case "input":
+                self.dialog.append(dialog.InputWindow(model=self.model, controller=self.controller))
+            case "filter":
+                self.dialog.append(dialog.FilterWindow(model=self.model, controller=self.controller))
+            case "delete":
+                self.dialog.append(dialog.DeleteWindow(model=self.model, controller=self.controller))
+            case "upload":
+                self.dialog.append(dialog.UploadWindow(model=self.model, controller=self.controller))
+            case "save":
+                self.dialog.append(dialog.SaveWindow(model=self.model, controller=self.controller))
+            case "ND":
+                self.dialog.append(dialog.ND_Dialog(model=self.model, controller=self.controller, mode=mode))
+            case "DA":
+                self.dialog.append(dialog.DA_Dialog(model=self.model, controller=self.controller, mode=mode))
+            case "DAS":
+                self.dialog.append(dialog.DAS_Dialog(model=self.model, controller=self.controller, mode=mode))
+            case "TT":
+                self.dialog.append(dialog.TT_Dialog(model=self.model, controller=self.controller, mode=mode))
         self.dialog[-1].open()
         self.recently_opend_dialogs.append(self.dialog[-1])
         self.controller.dialog(mode, self.dialog)
@@ -45,6 +46,7 @@ class MyScreenView(MDScreen):
     def close_dialog(self, dialog_data: list | tuple):
         if self.dialog[-1].mode == "input":
             self.controller.input_stock(dialog_data)
+
         elif self.dialog[-1].mode == "filter":
             match dialog_data:
                 case "number":
@@ -55,6 +57,7 @@ class MyScreenView(MDScreen):
                     self.open_dialog(mode="DAS")
                 case "travel time":
                     self.open_dialog(mode="TT")
+
         elif self.dialog[-1].mode == "delete":
             match dialog_data:
                 case "number":
@@ -65,10 +68,13 @@ class MyScreenView(MDScreen):
                     self.open_dialog(mode="DAS")
                 case "travel time":
                     self.open_dialog(mode="TT")
+
         elif self.dialog[-1].mode == "upload":
             self.controller.upload_from_file(dialog_data)
+
         elif self.dialog[-1].mode == "save":
             self.controller.save_in_file(dialog_data)
+
         elif self.dialog[-1].mode == "ND":
             for element in self.recently_opend_dialogs[::-1]:
                 if "DeleteWindow" in str(element):
@@ -76,6 +82,7 @@ class MyScreenView(MDScreen):
                 elif "FilterWindow" in str(element):
                     print("FilterWindow")
                     self.controller.filter_stock(dialog_data, "ND")
+
         elif self.dialog[-1].mode == "DA":
             for element in self.recently_opend_dialogs[::-1]:
                 if "DeleteWindow" in str(element):
@@ -83,6 +90,7 @@ class MyScreenView(MDScreen):
                 elif "FilterWindow" in str(element):
                     print("FilterWindow")
                     self.controller.filter_stock(dialog_data, "DA")
+
         elif self.dialog[-1].mode == "DAS":
             for element in self.recently_opend_dialogs[::-1]:
                 if "DeleteWindow" in str(element):
@@ -90,6 +98,7 @@ class MyScreenView(MDScreen):
                 elif "FilterWindow" in str(element):
                     print("FilterWindow")
                     self.controller.filter_stock(dialog_data, "DAS")
+
         elif self.dialog[-1].mode == "TT":
             for element in self.recently_opend_dialogs[::-1]:
                 if "DeleteWindow" in str(element):

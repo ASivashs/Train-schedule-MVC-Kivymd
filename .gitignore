@@ -1,2 +1,6 @@
 .idea
 __pycache__
+View/__pycache__
+Utils/__pycache__
+Model/__pycache__
+Controller/__pycache__
